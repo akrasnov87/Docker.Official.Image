@@ -1,24 +1,19 @@
-volumes:
-  mongodb_data: { driver: local }
+version: "3.7"
 
 services:
   rocketchat:
-    image: registry.rocket.chat/rocketchat/rocket.chat:${RELEASE:-latest}
+    image: akrasnov87/rocket.chat:6.14.0-develop
     restart: always
     labels:
-      traefik.enable: "true"
+      traefik.enable: "false"
       traefik.http.routers.rocketchat.rule: Host(`${DOMAIN:-}`)
       traefik.http.routers.rocketchat.tls: "true"
       traefik.http.routers.rocketchat.entrypoints: https
       traefik.http.routers.rocketchat.tls.certresolver: le
     environment:
-      MONGO_URL: "${MONGO_URL:-\
-        mongodb://${MONGODB_ADVERTISED_HOSTNAME:-mongodb}:${MONGODB_INITIAL_PRIMARY_PORT_NUMBER:-27017}/\
-        ${MONGODB_DATABASE:-rocketchat}?replicaSet=${MONGODB_REPLICA_SET_NAME:-rs0}}"
-      MONGO_OPLOG_URL: "${MONGO_OPLOG_URL:\
-        -mongodb://${MONGODB_ADVERTISED_HOSTNAME:-mongodb}:${MONGODB_INITIAL_PRIMARY_PORT_NUMBER:-27017}/\
-        local?replicaSet=${MONGODB_REPLICA_SET_NAME:-rs0}}"
-      ROOT_URL: ${ROOT_URL:-http://localhost:${HOST_PORT:-3000}}
+      MONGO_URL: mongodb://mongodb:27017/rocketchat?replicaSet=rs0
+      MONGO_OPLOG_URL: mongodb://mongodb:27017/local?replicaSet=rs0
+      ROOT_URL: http://localhost:3000
       PORT: ${PORT:-3000}
       DEPLOY_METHOD: docker
       DEPLOY_PLATFORM: ${DEPLOY_PLATFORM:-}
@@ -34,7 +29,7 @@ services:
     image: docker.io/bitnami/mongodb:${MONGODB_VERSION:-5.0}
     restart: always
     volumes:
-      - mongodb_data:/bitnami/mongodb
+      - ${DATA_PATH:-./data}:/bitnami/mongodb:rw
     environment:
       MONGODB_REPLICA_SET_MODE: primary
       MONGODB_REPLICA_SET_NAME: ${MONGODB_REPLICA_SET_NAME:-rs0}

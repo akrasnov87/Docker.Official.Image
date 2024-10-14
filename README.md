@@ -40,3 +40,13 @@ If you're using a third party Mongo provider, or working with Kubernetes, you ne
 
     docker run --name rocketchat -p 80:3000 --env ROOT_URL=http://localhost --env MONGO_URL=mongodb://mymongourl/mydb -d rocket.chat
 
+### Первый запуск
+
+<pre>
+git remote add upstream https://github.com/RocketChat/Docker.Official.Image
+git pull upstream master
+</pre>
+
+* создаём в корне каталог `data`
+* назначаем права `chmod -r 777 ./data`
+* запускаем `docker compose up`
